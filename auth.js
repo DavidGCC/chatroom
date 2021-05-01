@@ -10,8 +10,12 @@ module.exports = (app) => {
         done(null, user._id);
     });
     passport.deserializeUser(async (id, done) => {
-        const response = await User.findById(id);
-        done(null, response);
+        User.findById(id, (err, user) => {
+            done(null, {
+                _id: user._id,
+                username: user.username
+            });
+        });
     });
 
     passport.use(new LocalStrategy(async (username, password, done) => {
@@ -19,10 +23,12 @@ module.exports = (app) => {
             console.log(`User ${username} attempted to login`);
             if (err) { return done(err); }
             if (!user) { return done(null, false); }
-            console.log(password, user.password);
             const match = await bcrypt.compare(password, user.password);
             if (!match) { return done(null, false); }
-            return done(null, user);
+            return done(null, {
+                _id: user._id,
+                username: user.username
+            });
         });
     }));
 }

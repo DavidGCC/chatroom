@@ -7,7 +7,7 @@ html(lang="en")
             h1.center Welcome to the Chatroom
             if showLogin
                 h3.mt-3 Sign In
-                form.w-25
+                form.w-25(action="/login", method="POST")
                     .form-group
                         .username-group.mb-2
                             label(for="username") Username 
