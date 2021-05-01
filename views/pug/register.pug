@@ -5,7 +5,7 @@ html(lang="en")
         .container-fluid.d-flex.flex-column.align-items-center
             h1.center Sign Up on Chatroom
             h3.mt-3 Sign Up
-            form.w-25
+            form.w-25(action="/register", method="POST")
                 .form-group
                     .username-group.mb-2
                         label(for="username") Username 
