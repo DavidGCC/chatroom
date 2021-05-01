@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    include includes/head.pug
+    link(rel="stylesheet", href="../public/style.css")
+    body
+        .container-fluid.d-flex.flex-column.align-items-center
+            h1.center Welcome to the Chatroom
+            if showLogin
+                h3.mt-3 Sign In
+                form.w-25
+                    .form-group
+                        .username-group.mb-2
+                            label(for="username") Username 
+                            input.form-control#username(type="text", placeholder="Your username", name="username")
+                        .password-group
+                            label(for="password") Password 
+                            input#password.form-control(type="password", name="password", placeholder="password")
+                        div.d-flex.justify-content-center.mt-3
+                            button#submit.btn.btn-primary.w-25(type="submit") Sign In
+                small.mt-1.form-text.text-muted Don't have an account? 
+                    a(href="/register") Sign Up instead.
+        include includes/bootstrapScripts.pug
