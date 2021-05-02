@@ -8,7 +8,7 @@ html(lang="en")
                 form(action="/logout" method="GET")
                     button#logout.btn.btn-danger Logout     
                 #type.w-50
-                    form(action="message" method="POST")
+                    form#message-form()
                         .form-group
                             button#message-send.btn.btn-primary(type="submit") Send Message 
                             textarea#message-input.form-control.border.bg-light(name="message", cols="30", rows="10")
