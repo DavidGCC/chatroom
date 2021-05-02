@@ -1,13 +1,17 @@
 html(lang="en")
     include includes/head.pug
     body
-        include includes/messageMixin.pug
         #chatroom.container-fluid.d-flex.flex-column.align-items-center.p-5.pt-2
             h1 Chatroom
             #chat.w-100.flex-1.mb-2.border
-            #type.w-100
-                form(action="message" method="POST")
-                    .form-group
-                        button#message-send.btn.btn-primary(type="submit") Send Message 
-                        textarea#message-input.form-control.border.bg-light(name="message", cols="30", rows="10")
+            #user-group.d-flex.justify-content-between.w-100
+                form(action="/logout" method="GET")
+                    button#logout.btn.btn-danger Logout     
+                #type.w-50
+                    form(action="message" method="POST")
+                        .form-group
+                            button#message-send.btn.btn-primary(type="submit") Send Message 
+                            textarea#message-input.form-control.border.bg-light(name="message", cols="30", rows="10")
         include includes/bootstrapScripts.pug
+        script(src="/socket.io/socket.io.js") 
+        script(src="/public/client.js")

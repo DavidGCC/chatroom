@@ -26,14 +26,18 @@ body {
 
 #message-input {
     height: 100%;
-    width: 50%;
+    width: 75%;
     resize: none;
     float: right;
 }
 
 #message-send {
-    height: 100%;
+    min-height: 100%;
     float: right;
+}
+
+#user-group {
+    height: 3rem;
 }
 
 /* MESSAGES */

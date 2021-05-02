@@ -2,8 +2,12 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require('mongoose');
-const passport = require('passport');
 const session = require("express-session");
+const http = require("http");
+const app = express();
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 // file IMPORTs
 const auth = require("./auth");
@@ -12,8 +16,8 @@ const auth = require("./auth");
 const registerRouter = require("./routes/register");
 const chatRouter = require("./routes/chat");
 const loginRouter = require("./routes/login");
+const logoutRouter = require("./routes/logout");
 
-const app = express();
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Connected To Database"))
@@ -29,20 +33,24 @@ app.use(session({
     saveUninitialized: true,
     cookie: { httpOnly: true },
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 auth(app);
 
 // ROUTES
 app.use("/register", registerRouter);
 app.use("/chat", chatRouter);
 app.use("/login", loginRouter);
+app.use("/logout", logoutRouter);
+
+// SOCKET
+io.sockets.on("connection", (socket) => {
+    console.log("user has connected");
+});
 
 app.get("/", (req, res) => {
     res.render(`${process.cwd()}/views/pug/index.pug`, { title: "Chatroom", showLogin: true });
 });
 
 
-app.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 3000, () => {
     console.log(`Server listening on port ${process.env.PORT}`);
 });
