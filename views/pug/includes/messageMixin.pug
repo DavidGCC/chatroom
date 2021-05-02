@@ -1,0 +1,5 @@
+mixin message(message, user, currentUser = "")
+    .w-100
+        .chat-message.w-25.mb-3(class=user === currentUser ? "current-user-message" : "")
+            p.message-user.rounded.mb-1.bg-light.w-50.text-center #{user} 
+            p.message-body.rounded.bg-light #{message} 

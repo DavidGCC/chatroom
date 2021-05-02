@@ -15,7 +15,7 @@ const loginRouter = require("./routes/login");
 
 const app = express();
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Connected To Database"))
     .catch(err => console.log("Error While Connecting", err))
 
