@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     let socket = io();
+
+    socket.on("user", data => {
+        console.log(data);
+        userNotification(data.username, data.connected);
+    });
     
     document.getElementById("message-send").addEventListener("click", (e) => {
         e.preventDefault();
@@ -28,6 +33,18 @@ const createMessage = (message, sender, currentUser = "") => {
     outerDiv.appendChild(innerDiv);
     innerDiv.appendChild(user);
     innerDiv.appendChild(body);
+
+    document.getElementById("chat").appendChild(outerDiv);
+}
+
+const userNotification = (user, connected) => {
+    const outerDiv = document.createElement("div");
+    outerDiv.classList.add("w-100", "user-connection-container");
+    
+    const small = document.createElement("small");
+    small.classList.add("text-muted", "user-connection-text");
+    small.textContent = `${user} has ${connected ? "" : "dis"}connected`;
+    outerDiv.appendChild(small);
 
     document.getElementById("chat").appendChild(outerDiv);
 }

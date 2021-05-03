@@ -65,3 +65,9 @@ body {
 .current-user-message .message-body {
     clear: both;
 }
+
+/* USER CONNECTION NOTIFICATION */
+.user-connection-container {
+    text-align: center;
+    clear: both;
+}
