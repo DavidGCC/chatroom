@@ -1,19 +1,34 @@
+let firstTime = true;
 document.addEventListener("DOMContentLoaded", () => {
     let socket = io();
-
+    scrollToBot();
+    
     socket.on("user", data => {
-        console.log(data);
         userNotification(data.username, data.connected);
     });
     
-    document.getElementById("message-send").addEventListener("click", (e) => {
+    socket.on("message", data => {
+        createMessage(data.message, data.username);
+        scrollToBot();
+    });
+    
+    document.getElementById("message-send").addEventListener("click", async (e) => {
         e.preventDefault();
+        const message = document.getElementById("message-input");
+        const res = await fetch("/user");
+        const resToJson = await res.json();
+        if (message.value) {
+            createMessage(message.value, resToJson.username, true);
+            scrollToBot();
+            socket.emit("message", message.value);
+        }
+        message.value = "";
     });
 });
 
-const createMessage = (message, sender, currentUser = "") => {
+const createMessage = (message, sender, currentUser) => {
     const outerDiv = document.createElement("div");
-    outerDiv.classList.add("w-100");
+    outerDiv.classList.add("w-100", "chat-message-container");
 
     const innerDiv = document.createElement("div");
     innerDiv.classList.add("chat-message", "w-25", "mb-3");
@@ -26,7 +41,7 @@ const createMessage = (message, sender, currentUser = "") => {
     body.classList.add("message-body", "rounded", "bg-light");
     body.textContent = message;
 
-    if (sender === currentUser) {
+    if (currentUser) {
         innerDiv.classList.add("current-user-message");
     }
 
@@ -47,4 +62,16 @@ const userNotification = (user, connected) => {
     outerDiv.appendChild(small);
 
     document.getElementById("chat").appendChild(outerDiv);
+}
+
+const scrollToBot = () => {
+    const chatArea = document.getElementById("chat");
+    console.log(chatArea.scrollTop + chatArea.clientHeight, chatArea.scrollHeight);
+    if (firstTime) {
+        chatArea.scrollTop = chatArea.scrollHeight;
+        firstTime = false;
+    } else if (chatArea.scrollTop + chatArea.clientHeight === chatArea.scrollHeight) {
+        const messages = document.getElementsByClassName("chat-message-container");
+        chatArea.scrollTop = 0;
+    }
 }

@@ -21,6 +21,7 @@ const registerRouter = require("./routes/register");
 const chatRouter = require("./routes/chat");
 const loginRouter = require("./routes/login");
 const logoutRouter = require("./routes/logout");
+const userRouter = require("./routes/user");
 
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
@@ -46,6 +47,7 @@ app.use("/register", registerRouter);
 app.use("/chat", chatRouter);
 app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
+app.use("/user", userRouter);
 
 // SOCKET
 const onAuthorizeSuccess = (data, accept) => accept(null, true);
@@ -67,8 +69,8 @@ io.use(passportSocketio.authorize({
 let userCount = 0;
 io.sockets.on("connection", (socket) => {
     console.log(`User ${socket.request.user.username} Connected to Chatroom.`);
+    socket.user = socket.request.user.username;
     userCount++;
-    console.log(socket.request.user);
     io.emit("user", {
         username: socket.request.user.username,
         connected: true,
@@ -83,7 +85,15 @@ io.sockets.on("connection", (socket) => {
             username: socket.request.user.username
         })
     });
+
+    socket.on("message", (data) => {
+        socket.broadcast.emit("message", {
+            username: socket.request.user.username,
+            message: data
+        });
+    });
 });
+
 
 app.get("/", (req, res) => {
     res.render(`${process.cwd()}/views/pug/index.pug`, { title: "Chatroom", showLogin: true });
