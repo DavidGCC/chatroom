@@ -42,9 +42,11 @@ body {
 /* MESSAGES */
 
 .chat-message {
+    max-width: 25%;
     border-radius: 1rem;
     float: left;
     clear: both;
+    word-wrap: break-word;
 }
 .message-user {
     margin: 0;

@@ -1,7 +1,6 @@
 let firstTime = true;
 document.addEventListener("DOMContentLoaded", () => {
     let socket = io();
-    scrollToBot();
     
     socket.on("user", data => {
         userNotification(data.username, data.connected);
@@ -9,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     socket.on("message", data => {
         createMessage(data.message, data.username);
-        scrollToBot();
     });
     
     document.getElementById("message-send").addEventListener("click", async (e) => {
@@ -19,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const resToJson = await res.json();
         if (message.value) {
             createMessage(message.value, resToJson.username, true);
-            scrollToBot();
             socket.emit("message", message.value);
         }
         message.value = "";
@@ -50,6 +47,7 @@ const createMessage = (message, sender, currentUser) => {
     innerDiv.appendChild(body);
 
     document.getElementById("chat").appendChild(outerDiv);
+    return outerDiv;
 }
 
 const userNotification = (user, connected) => {
@@ -62,16 +60,5 @@ const userNotification = (user, connected) => {
     outerDiv.appendChild(small);
 
     document.getElementById("chat").appendChild(outerDiv);
-}
-
-const scrollToBot = () => {
-    const chatArea = document.getElementById("chat");
-    console.log(chatArea.scrollTop + chatArea.clientHeight, chatArea.scrollHeight);
-    if (firstTime) {
-        chatArea.scrollTop = chatArea.scrollHeight;
-        firstTime = false;
-    } else if (chatArea.scrollTop + chatArea.clientHeight === chatArea.scrollHeight) {
-        const messages = document.getElementsByClassName("chat-message-container");
-        chatArea.scrollTop = 0;
-    }
+    return outerDiv;
 }
