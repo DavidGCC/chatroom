@@ -74,15 +74,21 @@ io.use(passportSocketio.authorize({
 }));
 
 let userCount = 0;
-io.sockets.on("connection", (socket) => {
+io.sockets.on("connection", async (socket) => {
     console.log(`User ${socket.request.user.username} Connected to Chatroom.`);
-    socket.user = socket.request.user.username;
     userCount++;
     io.emit("user", {
         username: socket.request.user.username,
         connected: true,
         userCount
     });
+
+    try {
+        const messages = await Message.find().sort({ "createdAt": 1 });
+        socket.emit("init messages", messages);
+    } catch(err) {
+        console.log("Error while initialising messages", err);
+    }
 
     socket.on("disconnect", () => {
         userCount--;
@@ -94,17 +100,21 @@ io.sockets.on("connection", (socket) => {
     });
 
     socket.on("message", async (data) => {
-        const newMessage = new Message({
-            sender: socket.request.user.username,
-            message: data,
-        });
-
-        await newMessage.save();
-
-        socket.broadcast.emit("message", {
-            username: socket.request.user.username,
-            message: data
-        });
+        try {
+            const newMessage = new Message({
+                sender: socket.request.user.username,
+                message: data,
+            });
+            
+            await newMessage.save();
+            
+            socket.broadcast.emit("message", {
+                username: socket.request.user.username,
+                message: data
+            });
+        } catch (err) {
+            console.log("error while saving and emiting message");
+        }
     });
 });
 

@@ -1,6 +1,8 @@
 let firstTime = true;
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     let socket = io();
+    const res = await fetch("/user");
+    const resToJson = await res.json();
     
     socket.on("user", data => {
         userNotification(data.username, data.connected);
@@ -9,12 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.on("message", data => {
         createMessage(data.message, data.username);
     });
+
+    socket.on("init messages", data => {
+        data.forEach(message => {
+            createMessage(message.message, message.sender, message.sender === resToJson.username);
+        })
+    });
     
     document.getElementById("message-send").addEventListener("click", async (e) => {
         e.preventDefault();
         const message = document.getElementById("message-input");
-        const res = await fetch("/user");
-        const resToJson = await res.json();
         if (message.value) {
             createMessage(message.value, resToJson.username, true);
             socket.emit("message", message.value);
