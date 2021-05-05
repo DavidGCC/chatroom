@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require('mongoose');
 const session = require("express-session");
+const flash = require("connect-flash");
 const http = require("http");
 const app = express();
 const server = http.createServer(app);
@@ -47,6 +48,7 @@ app.use(session({
     cookie: { httpOnly: true },
     store: store,
 }));
+app.use(flash());
 auth(app);
 
 // ROUTES
@@ -120,7 +122,7 @@ io.sockets.on("connection", async (socket) => {
 
 
 app.get("/", (req, res) => {
-    res.render(`${process.cwd()}/views/pug/index.pug`, { title: "Chatroom", showLogin: true });
+    res.render(`${process.cwd()}/views/pug/index.pug`, { title: "Chatroom", showLogin: true, error: req.flash("error") });
 });
 
 

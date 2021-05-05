@@ -6,7 +6,7 @@ const User = require("../models/User");
 
 
 router.get("/", (req, res) => {
-    res.render(`${process.cwd()}/views/pug/register.pug`, { title: "Chatroom | Register" });
+    res.render(`${process.cwd()}/views/pug/register.pug`, { title: "Chatroom | Register", error: req.flash("error") });
 });
 
 router.post("/", async (req, res, next) => {
@@ -18,7 +18,8 @@ router.post("/", async (req, res, next) => {
         next(null, response);
     } catch (err) {
         console.log("Error While Registering", err);
-        res.redirect("/");
+        req.flash("error", `Username ${username} already taken`);
+        res.redirect("/register");
     }
 }, passport.authenticate("local", { failureRedirect: "/" }), (req, res) => res.redirect("/chat"));
 
