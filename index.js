@@ -11,7 +11,11 @@ const io = new Server(server);
 const cookieParser = require("cookie-parser");
 const passportSocketio = require("passport.socketio");
 const MongoStore = require("connect-mongo");
-const store = MongoStore.create({ mongoUrl: process.env.MONGO_URI });
+const store = MongoStore.create({ 
+    mongoUrl: process.env.MONGO_URI,
+    autoRemove: "interval",
+    autoRemoveInterval: 15
+});
 
 // file IMPORTs
 const auth = require("./auth");
@@ -22,6 +26,9 @@ const chatRouter = require("./routes/chat");
 const loginRouter = require("./routes/login");
 const logoutRouter = require("./routes/logout");
 const userRouter = require("./routes/user");
+
+// MODELS
+const Message = require("./models/Message");
 
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
@@ -35,8 +42,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     key: "connect.sid",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: { httpOnly: true },
     store: store,
 }));
@@ -86,7 +93,14 @@ io.sockets.on("connection", (socket) => {
         })
     });
 
-    socket.on("message", (data) => {
+    socket.on("message", async (data) => {
+        const newMessage = new Message({
+            sender: socket.request.user.username,
+            message: data,
+        });
+
+        await newMessage.save();
+
         socket.broadcast.emit("message", {
             username: socket.request.user.username,
             message: data
