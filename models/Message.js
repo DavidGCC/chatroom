@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const muv = require("mongoose-unique-validator");
 
 const messageSchema = new mongoose.Schema({
-    sender: { type: String, unique: true, required: true },
+    sender: { type: String, required: true },
     message: { type: String }
 }, { timestamps: { createdAt: "createdAt" } });
 
